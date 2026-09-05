@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VietQR API Tester</title>
+<style>
+  :root{
+    --bg:#0F1B2B;
+    --surface:#15243A;
+    --surface-2:#1C3049;
+    --border:#2A4160;
+    --primary:#3D8BFD;
+    --primary-dark:#2563D6;
+    --accent:#F2B84B;
+    --text:#EAF1FB;
+    --text-muted:#8FA3C0;
+    --danger:#F26B6B;
+    --success:#4FCB8C;
+    --radius:10px;
+    --sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.5;
+    min-height:100vh;
+  }
+  header{
+    padding:28px 24px 20px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  header h1{
+    font-size:20px;
+    margin:0;
+    font-weight:700;
+    letter-spacing:.2px;
+  }
+  header h1 span{color:var(--accent);}
+  header p{
+    margin:0;
+    color:var(--text-muted);
+    font-size:13.5px;
+  }
+  main{
+    max-width:1100px;
+    margin:0 auto;
+    padding:28px 24px 60px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+  }
+  @media (max-width: 860px){
+    main{grid-template-columns:1fr;}
+  }
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px;
+  }
+  .step{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:0 0 14px;
+  }
+  .step:not(:first-child){margin-top:22px;}
+  .step .num{
+    width:22px;height:22px;
+    border-radius:50%;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text-muted);
+    font-size:12px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .step h2{
+    font-size:14px;
+    margin:0;
+    font-weight:600;
+    color:var(--text);
+  }
+  label{
+    display:block;
+    font-size:12.5px;
+    color:var(--text-muted);
+    margin:10px 0 5px;
+  }
+  input[type=text], input[type=number], input[type=password], select{
+    width:100%;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:9px 11px;
+    border-radius:8px;
+    font-size:14px;
+    font-family:inherit;
+  }
+  input:focus, select:focus{
+    outline:2px solid var(--primary);
+    outline-offset:1px;
+  }
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .pw-wrap{position:relative;}
+  .pw-wrap button{
+    position:absolute; right:6px; top:6px;
+    background:none; border:none; color:var(--text-muted);
+    font-size:12px; cursor:pointer; padding:4px 6px;
+  }
+  .hint{font-size:11.5px; color:var(--text-muted); margin-top:4px;}
+  .submit-btn{
+    width:100%;
+    margin-top:22px;
+    background:var(--primary);
+    color:#0B1622;
+    border:none;
+    font-weight:700;
+    font-size:14.5px;
+    padding:12px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .submit-btn:hover{background:var(--primary-dark); color:var(--text);}
+  .submit-btn:disabled{opacity:.5; cursor:default;}
+
+  .preview{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:260px;
+    border:1px dashed var(--border);
+    border-radius:var(--radius);
+    background:var(--surface-2);
+    padding:20px;
+    text-align:center;
+  }
+  .preview img{
+    max-width:100%;
+    border-radius:8px;
+    display:block;
+  }
+  .preview .placeholder{color:var(--text-muted); font-size:13px;}
+  .actions{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; justify-content:center;}
+  .actions button, .actions a{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-size:12.5px;
+    padding:8px 12px;
+    border-radius:7px;
+    cursor:pointer;
+    text-decoration:none;
+  }
+  .actions button:hover, .actions a:hover{border-color:var(--primary);}
+
+  .banner{
+    margin-top:14px;
+    padding:10px 12px;
+    border-radius:8px;
+    font-size:13px;
+    display:none;
+  }
+  .banner.error{background:rgba(242,107,107,.12); border:1px solid var(--danger); color:#FFC9C9; display:block;}
+  .banner.success{background:rgba(79,203,140,.12); border:1px solid var(--success); color:#B9F0D2; display:block;}
+
+  pre{
+    background:#0B1622;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px;
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:#B9C8DE;
+    overflow-x:auto;
+    max-height:220px;
+    margin-top:14px;
+    white-space:pre-wrap;
+    word-break:break-all;
+  }
+  footer{
+    text-align:center;
+    color:var(--text-muted);
+    font-size:12px;
+    padding:20px;
+  }
+  footer a{color:var(--primary);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>VietQR API <span>Tester</span></h1>
+  <p>Trang test API tạo mã QR — có thể lưu làm link chia sẻ theo giao dịch, và dùng để kiểm tra trước khi gọi từ Shortcut iPhone.</p>
+</header>
+
+<main>
+  <!-- LEFT: FORM -->
+  <div class="card">
+
+    <div class="step">
+      <div class="num">1</div>
+      <h2>Xác thực (My VietQR)</h2>
+    </div>
+    <label for="clientId">x-client-id</label>
+    <input type="text" id="clientId" placeholder="Dán Client ID">
+    <label for="apiKey">x-api-key</label>
+    <div class="pw-wrap">
+      <input type="password" id="apiKey" placeholder="Dán API Key">
+      <button type="button" id="toggleKey">Hiện</button>
+    </div>
+    <p class="hint">Được lưu tại trình duyệt của bạn (localStorage) — không gửi đi đâu ngoài api.vietqr.io.</p>
+
+    <div class="step">
+      <div class="num">2</div>
+      <h2>Ngân hàng thụ hưởng</h2>
+    </div>
+    <label for="bankSelect">Chọn ngân hàng</label>
+    <select id="bankSelect"><option value="">Đang tải danh sách ngân hàng…</option></select>
+
+    <div class="step">
+      <div class="num">3</div>
+      <h2>Tài khoản nhận tiền</h2>
+    </div>
+    <label for="accountNo">Số tài khoản</label>
+    <input type="text" id="accountNo" placeholder="VD: 113366668888">
+    <label for="accountName">Tên chủ tài khoản</label>
+    <input type="text" id="accountName" placeholder="VIẾT HOA KHÔNG DẤU, vd: NGUYEN VAN A">
+
+    <div class="step">
+      <div class="num">4</div>
+      <h2>Thông tin giao dịch (tuỳ chọn)</h2>
+    </div>
+    <div class="row2">
+      <div>
+        <label for="amount">Số tiền</label>
+        <input type="number" id="amount" placeholder="VD: 79000">
+      </div>
+      <div>
+        <label for="template">Mẫu QR</label>
+        <select id="template">
+          <option value="compact2">compact2 (đầy đủ)</option>
+          <option value="compact" selected>compact</option>
+          <option value="qr_only">qr_only (chỉ QR)</option>
+          <option value="print">print</option>
+        </select>
+      </div>
+    </div>
+    <label for="addInfo">Nội dung chuyển khoản</label>
+    <input type="text" id="addInfo" placeholder="Toi da 25 ky tu, khong dau">
+
+    <button class="submit-btn" id="genBtn">Tạo mã QR</button>
+    <div class="banner" id="banner"></div>
+  </div>
+
+  <!-- RIGHT: RESULT -->
+  <div class="card">
+    <div class="step">
+      <div class="num">↳</div>
+      <h2>Kết quả</h2>
+    </div>
+    <div class="preview" id="preview">
+      <span class="placeholder">Điền thông tin bên trái rồi bấm "Tạo mã QR" để xem trước.</span>
+    </div>
+    <div class="actions" id="resultActions" style="display:none;">
+      <a id="downloadLink" download="vietqr.png">Tải ảnh QR</a>
+      <button id="copyCode">Copy chuỗi QR</button>
+      <button id="copyCurl">Copy lệnh curl</button>
+      <button id="copyShareLink">Copy link chia sẻ</button>
+    </div>
+    <p class="hint" id="shareHint" style="display:none; text-align:center;">Link chia sẻ chỉ chứa thông tin giao dịch, không chứa x-client-id/x-api-key.</p>
+    <pre id="rawJson" style="display:none;"></pre>
+  </div>
+</main>
+
+<footer>
+  Endpoint: <code>POST https://api.vietqr.io/v2/generate</code> · Danh sách ngân hàng lấy từ <code>GET https://api.vietqr.io/v2/banks</code>
+</footer>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const clientIdEl = $('clientId'), apiKeyEl = $('apiKey');
+
+  // restore saved credentials
+  clientIdEl.value = localStorage.getItem('vietqr_client_id') || '';
+  apiKeyEl.value = localStorage.getItem('vietqr_api_key') || '';
+  clientIdEl.addEventListener('input', () => localStorage.setItem('vietqr_client_id', clientIdEl.value.trim()));
+  apiKeyEl.addEventListener('input', () => localStorage.setItem('vietqr_api_key', apiKeyEl.value.trim()));
+
+  $('toggleKey').addEventListener('click', () => {
+    const showing = apiKeyEl.type === 'text';
+    apiKeyEl.type = showing ? 'password' : 'text';
+    $('toggleKey').textContent = showing ? 'Hiện' : 'Ẩn';
+  });
+
+  // ---- URL params (dùng cho link chia sẻ) ----
+  // Ví dụ: index.html?bin=970436&acc=1031451081&name=HUYNH+TRAN+TUAN+KIET&amount=79000&info=Chuyen+khoan&template=compact
+  const params = new URLSearchParams(location.search);
+
+  function applyParamsToForm(){
+    if (params.has('bin')) bankSelect.value = params.get('bin');
+    if (params.has('acc')) $('accountNo').value = params.get('acc');
+    if (params.has('name')) $('accountName').value = params.get('name');
+    if (params.has('amount')) $('amount').value = params.get('amount');
+    if (params.has('info')) $('addInfo').value = params.get('info');
+    if (params.has('template')) $('template').value = params.get('template');
+  }
+
+  // load bank list
+  const bankSelect = $('bankSelect');
+  fetch('https://api.vietqr.io/v2/banks')
+    .then(r => r.json())
+    .then(res => {
+      const banks = (res && res.data) || [];
+      bankSelect.innerHTML = '<option value="">-- Chọn ngân hàng --</option>' +
+        banks.map(b => `<option value="${b.bin}">${b.shortName || b.short_name || b.name} — ${b.name}</option>`).join('');
+    })
+    .catch(() => {
+      bankSelect.innerHTML = '<option value="">Không tải được danh sách — nhập BIN thủ công bên dưới</option>';
+      const manual = document.createElement('input');
+      manual.type = 'text';
+      manual.id = 'acqIdManual';
+      manual.placeholder = 'Nhập mã BIN ngân hàng, VD: 970436';
+      manual.style.marginTop = '8px';
+      bankSelect.insertAdjacentElement('afterend', manual);
+    })
+    .finally(() => {
+      applyParamsToForm();
+      // Nếu link chia sẻ có đủ thông tin VÀ máy này đã lưu sẵn key, tự tạo QR luôn
+      const hasCreds = clientIdEl.value.trim() && apiKeyEl.value.trim();
+      const hasTx = params.get('bin') && params.get('acc');
+      if (hasCreds && hasTx) generateQR();
+    });
+
+  function showBanner(msg, type){
+    const b = $('banner');
+    b.textContent = msg;
+    b.className = 'banner ' + type;
+  }
+
+  let lastPayload = null;
+
+  function buildShareLink(body){
+    const u = new URL(location.href);
+    u.search = '';
+    u.searchParams.set('bin', body.acqId);
+    u.searchParams.set('acc', body.accountNo);
+    if (body.accountName) u.searchParams.set('name', body.accountName);
+    if (body.amount) u.searchParams.set('amount', body.amount);
+    if (body.addInfo) u.searchParams.set('info', body.addInfo);
+    u.searchParams.set('template', body.template);
+    return u.toString();
+  }
+
+  async function generateQR(){
+    const clientId = clientIdEl.value.trim();
+    const apiKey = apiKeyEl.value.trim();
+    const acqId = bankSelect.value || (document.getElementById('acqIdManual') || {}).value || '';
+    const accountNo = $('accountNo').value.trim();
+    const accountName = $('accountName').value.trim();
+    const amount = $('amount').value.trim();
+    const addInfo = $('addInfo').value.trim();
+    const template = $('template').value;
+
+    $('banner').className = 'banner';
+    if (!clientId || !apiKey) { showBanner('Thiếu x-client-id hoặc x-api-key.', 'error'); return; }
+    if (!acqId) { showBanner('Chưa chọn ngân hàng.', 'error'); return; }
+    if (!accountNo) { showBanner('Chưa nhập số tài khoản.', 'error'); return; }
+
+    const body = { accountNo, acqId, template };
+    if (accountName) body.accountName = accountName;
+    if (amount) body.amount = Number(amount);
+    if (addInfo) body.addInfo = addInfo;
+    lastPayload = body;
+
+    const btn = $('genBtn');
+    btn.disabled = true; btn.textContent = 'Đang tạo…';
+
+    try {
+      const resp = await fetch('https://api.vietqr.io/v2/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-client-id': clientId,
+          'x-api-key': apiKey
+        },
+        body: JSON.stringify(body)
+      });
+      const data = await resp.json();
+
+      $('rawJson').style.display = 'block';
+      $('rawJson').textContent = JSON.stringify(data, null, 2);
+
+      if (data.code === '00' && data.data && data.data.qrDataURL) {
+        $('preview').innerHTML = `<img src="${data.data.qrDataURL}" alt="Mã QR VietQR">`;
+        $('resultActions').style.display = 'flex';
+        $('shareHint').style.display = 'block';
+        $('downloadLink').href = data.data.qrDataURL;
+        $('copyCode').onclick = () => navigator.clipboard.writeText(data.data.qrCode || '');
+        $('copyCurl').onclick = () => navigator.clipboard.writeText(
+`curl --location --request POST 'https://api.vietqr.io/v2/generate' \\
+--header 'x-client-id: ${clientId}' \\
+--header 'x-api-key: ${apiKey}' \\
+--header 'Content-Type: application/json' \\
+--data-raw '${JSON.stringify(body)}'`);
+        $('copyShareLink').onclick = () => navigator.clipboard.writeText(buildShareLink(body));
+        showBanner('Tạo mã QR thành công.', 'success');
+      } else {
+        $('preview').innerHTML = '<span class="placeholder">Không tạo được QR — xem chi tiết lỗi bên dưới.</span>';
+        $('resultActions').style.display = 'none';
+        showBanner(data.desc || 'Có lỗi xảy ra từ API.', 'error');
+      }
+    } catch (err) {
+      $('rawJson').style.display = 'block';
+      $('rawJson').textContent = String(err);
+      showBanner('Gọi API thất bại (có thể do mạng hoặc CORS). Mở Console trình duyệt để xem chi tiết.', 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Tạo mã QR';
+    }
+  }
+
+  $('genBtn').addEventListener('click', generateQR);
+</script>
+
+</body>
+</html>
