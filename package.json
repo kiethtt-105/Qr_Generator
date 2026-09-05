@@ -1,0 +1,9 @@
+{
+  "name": "qr-gerenate",
+  "version": "1.0.0",
+  "private": true,
+  "description": "QR generator: giao diện web tĩnh (index.html) + API /api dùng cho iOS Shortcuts",
+  "dependencies": {
+    "qrcode": "^1.5.3"
+  }
+}

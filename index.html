@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tạo mã QR</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="crumb">Tiện ích &nbsp;›&nbsp; <b>Tạo mã QR</b></div>
+  <h1>Tạo mã QR</h1>
+
+  <div class="tabbar" id="tabbar"></div>
+
+  <div class="panels">
+    <!-- LEFT: INPUT -->
+    <div class="card">
+      <div class="card-head">
+        <div class="icon-circle" id="leftIcon">T</div>
+        <div>
+          <h2>Nhập thông tin</h2>
+          <p>Điền nội dung theo loại mã QR bạn chọn.</p>
+        </div>
+      </div>
+      <div id="formArea"></div>
+    </div>
+
+    <!-- RIGHT: RESULT -->
+    <div class="card">
+      <div class="card-head">
+        <div class="icon-circle" style="background:#EAF7EF;color:#2FA95C;">▦</div>
+        <div>
+          <h2>Kết quả</h2>
+          <p>Xem trước, tải xuống hoặc in mã QR.</p>
+        </div>
+      </div>
+      <div class="qr-stage" id="qrStage">
+        <svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20v.01"/></svg>
+        <div id="qrRender"></div>
+        <div class="label" id="qrPlaceholderText">Chưa có mã QR</div>
+      </div>
+      <div class="short-result" id="shortResult"></div>
+      <div class="actions">
+        <button class="btn btn-grad" id="btnDownload" disabled>⬇ Tải xuống</button>
+        <button class="btn btn-outline" id="btnPrint" disabled>🖶 In mã QR</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footbar">
+    <div class="steps">
+      <div class="step done"><div class="dot">1</div>Chọn loại QR</div>
+      <div class="step done"><div class="dot">2</div>Nhập thông tin</div>
+      <div class="step" id="step3"><div class="dot">3</div>Thiết kế QR</div>
+    </div>
+    <button class="btn btn-grad" id="btnGenerate" style="width:auto;">Tạo mã QR ⚙</button>
+  </div>
+</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
